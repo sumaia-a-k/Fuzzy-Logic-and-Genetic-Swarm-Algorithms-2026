@@ -1,0 +1,28 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Editor and system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Word temporary files
+~$*.docx
+
+# Claude files (rules and settings for Claude, not course material)
+CLAUDE.md
+claude.md
+CLAUDE.local.md
+.claude/
+.claude*
+.mcp.json
