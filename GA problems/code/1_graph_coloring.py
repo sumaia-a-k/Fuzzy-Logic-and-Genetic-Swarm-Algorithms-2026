@@ -6,6 +6,7 @@ so that two connected cities never have the same color.
 
 Representation: integer, one gene per city (gene = color number 0 to 6)
 Fitness:        MINIMIZE  bad_edges * 10 + colors_used
+Selection:      tournament (pick 3 different chromosomes, the lowest fitness wins)
 
 Run:  python 1_graph_coloring.py
 """
@@ -28,6 +29,12 @@ gene_of = {node: i for i, node in enumerate(nodes)}
 
 # One bad edge costs more than all 7 colors together
 PENALTY = 10
+
+# The number of players in one tournament
+TOURNAMENT_SIZE = 3
+
+# M: how many parents we want. It does not have to be the population size.
+NUM_PARENTS = 4
 
 
 # ---------- The map ----------
@@ -89,6 +96,28 @@ def fitness(chromosome):
     return count_bad_edges(chromosome) * PENALTY + count_colors(chromosome)
 
 
+# ---------- Selection: tournament ----------
+def pick_players(population):
+    # Pick TOURNAMENT_SIZE different chromosomes at random.
+    # random.sample() never takes the same chromosome twice.
+    return random.sample(population, TOURNAMENT_SIZE)
+
+
+def tournament_winner(players):
+    # Lower is better, so the player with the smallest fitness wins.
+    # key=fitness means "compare the players by their fitness".
+    return min(players, key=fitness)
+
+
+def selection(population, num_parents):
+    # Play one tournament for each parent we want
+    mating_pool = []
+    for _ in range(num_parents):
+        players = pick_players(population)
+        mating_pool.append(tournament_winner(players))
+    return mating_pool
+
+
 # ---------- Try it ----------
 print_map()
 print()
@@ -109,3 +138,17 @@ for c in population:
 best = min(population, key=fitness)
 print(f"\nThe best coloring in this population (fitness = {fitness(best)}):")
 decode(best)
+
+# One tournament, step by step
+players = pick_players(population)
+print(f"\nOne tournament with {TOURNAMENT_SIZE} players:")
+for c in players:
+    print(f"  {c}  fitness = {fitness(c)}")
+winner = tournament_winner(players)
+print(f"  The winner is {winner} (the smallest fitness, {fitness(winner)})")
+
+# Choose the mating pool: one tournament for each parent
+mating_pool = selection(population, NUM_PARENTS)
+print(f"\nMating pool ({NUM_PARENTS} parents):")
+for c in mating_pool:
+    print(f"  {c}  fitness = {fitness(c)}")
