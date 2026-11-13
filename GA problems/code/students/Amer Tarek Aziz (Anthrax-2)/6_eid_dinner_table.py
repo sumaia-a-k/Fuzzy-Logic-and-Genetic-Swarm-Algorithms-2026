@@ -280,7 +280,7 @@ def run_ga():
     # 3. Return the best chromosome.
 
     for i in range(MAX_GENERATIONS):
-        parents = selection(population, num_parents=3)
+        parents = selection(population, num_parents=NUM_PARENTS)   # used NUM_PARENTS (which is 30) instead of 3. It did indeed cause the algorithm to reach a solution much faster.
         children = make_children(parents)
         mutated_children = mutate_children(children)
         population = survival_selection(population, mutated_children)
