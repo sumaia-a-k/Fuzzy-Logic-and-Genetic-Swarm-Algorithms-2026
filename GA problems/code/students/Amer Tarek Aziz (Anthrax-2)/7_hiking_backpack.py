@@ -1,16 +1,15 @@
 """
-Problem 6: The Eid Dinner Table (exercise: complete the code)
+Problem 7: The Hiking Backpack (exercise: complete the code)
 
-Grandma invites 8 family members to Eid dinner at one round table.
-Some people love to sit together, and some people always argue.
-Find a seating plan where every guest sits next to friends,
-and nobody sits next to someone they argue with.
-The table is round: the last seat is next to the first seat.
+Rami goes on a one-day hike in the mountains. He has 12 items at home,
+but his backpack can carry only 10 kg. Each item has a weight and a value
+(how useful it is on the hike). Choose the items with the biggest total value
+that are not heavier than 10 kg.
 
-Selection:  tournament selection
+Selection:  roulette wheel selection
 Survival:   keep the best (given)
 
-Run:  python 6_eid_dinner_table.py
+Run:  python 7_hiking_backpack.py
 
 What you have to do:
   Write every function marked with TODO. The comments tell you what each
@@ -27,70 +26,116 @@ What you have to do:
 
 import random
 
-# The 8 guests
-guests = ["Grandma", "Grandpa", "Ahmad", "Lina", "Omar", "Sara", "Rami", "Huda"]
+# name: (weight in kg, value)
+items = {
+    "Water":       (3, 10),
+    "Sandwiches":  (1, 7),
+    "Hammock":     (4, 9),
+    "Rain coat":   (2, 8),
+    "Sweater":     (1, 6),
+    "First aid":   (1, 9),
+    "Torch":       (1, 5),
+    "Camera":      (1, 4),
+    "Small stove": (2, 5),
+    "Rope":        (1, 3),
+    "Book":        (1, 2),
+    "Guitar":      (3, 4),
+}
 
-# Pairs of guests who are happy to sit together
-friends = [("Grandma", "Sara"), ("Sara", "Omar"), ("Omar", "Rami"), ("Rami", "Huda"),
-           ("Huda", "Ahmad"), ("Ahmad", "Lina"), ("Lina", "Grandpa"), ("Grandpa", "Grandma"),
-           ("Grandma", "Lina"), ("Omar", "Huda")]
+names = list(items.keys())
 
-# Pairs of guests who always argue
-argue = [("Omar", "Ahmad"), ("Rami", "Lina"), ("Sara", "Grandpa"), ("Huda", "Grandma"),
-         ("Ahmad", "Grandpa")]
+N = len(items)
+
+# The backpack can carry at most 10 kg
+MAX_WEIGHT = 10
 
 # The settings of the genetic algorithm
 POP_SIZE = 30          # how many chromosomes live in each generation
 NUM_PARENTS = 30       # how many parents we choose in each generation
-TOURNAMENT_SIZE = 3    # how many chromosomes play in each tournament
 CROSSOVER_RATE = 0.8   # pc: the chance that a pair of parents does crossover
 MUTATION_RATE = 0.3    # pm: the chance of a mutation
 MAX_GENERATIONS = 200  # stop after this many generations
 
+PENALTY = 50
 
 # ---------- Representation ----------
 def random_chromosome():
-    # TODO: return one random chromosome (one random seating plan).
+    # TODO: return one random chromosome (one random backpack).
     # - First decide: what does a chromosome look like? What does one gene mean?
     # - Write your answer in a comment here.
-    # Delete the next line when you write your code.
-    # It stops the program with a message.
-    raise NotImplementedError("random_chromosome() is not written yet")
+    # backpack = []
+    # total_weight = 0
+    # available_items = names.copy()
+    # random.shuffle(available_items)
+
+    # for item in available_items:
+    #     item_weight = items[item][0]
+    #     if total_weight + item_weight <= MAX_WEIGHT:
+    #         backpack.append(item)
+    #         total_weight += item_weight
+    #     else:
+    #         continue
+
+    # return backpack
+    return [random.randint(0, 1) for _ in range(N)]
+
+
+def get_total_weight(chromosome):
+    total = 0
+    for i in range(len(chromosome)):
+        name = names[i]
+        total += items[name][0]
+    return total
+
+
+def get_total_value(chromosome):
+    total = 0
+    for i in range(len(chromosome)):
+        name = names[i]
+        total += items[name][1]
+    return total
 
 
 def decode(chromosome):
-    # TODO: print the seating plan in a way people can read.
-    # - Show who sits in each seat, and who sits next to whom.
-    # Delete the next line when you write your code.
-    # It stops the program with a message.
-    raise NotImplementedError("decode() is not written yet")
+    # TODO: print the backpack in a way people can read.
+    # - Show the items in the backpack, the total weight and the total value.
+    print("All items inside the backpack:\n")
+    for n, i in enumerate(range(len(chromosome)), 1):
+        name = names[i]
+        print(f"item {n}  -->  {name},  weighs  {items[name][0]},  value  {items[name][1]}")
+
+    print(f"Total weight:  {get_total_weight(chromosome)}")
+    print(f"Total value:  {get_total_value(chromosome)}")
 
 
 # ---------- Population ----------
 def generate_population(size):
     # TODO: return a list with "size" random chromosomes.
-    # Delete the next line when you write your code.
-    # It stops the program with a message.
-    raise NotImplementedError("generate_population() is not written yet")
-
+    return [random_chromosome() for _ in range(size)]
 
 # ---------- Fitness ----------
 def fitness(chromosome):
-    # TODO: return a number that tells how good this seating plan is.
-    # - A higher number must mean a better plan,
+    # TODO: return a number that tells how good this backpack is.
+    # - A higher number must mean a better backpack,
     #   because survival_selection() keeps the highest fitness.
-    # - Think: what makes a plan good? What makes it bad?
-    #   What number does a perfect plan get?
-    # Delete the next line when you write your code.
-    # It stops the program with a message.
-    raise NotImplementedError("fitness() is not written yet")
+    # - Roulette wheel selection needs a fitness that is 0 or more.
+    # - Think: what do you do with a backpack that is heavier than 10 kg?
+    # if get_total_weight(chromosome) > MAX_WEIGHT:
+    #     return 0
+
+    # return get_total_value(chromosome)
+
+    if get_total_weight(chromosome) > MAX_WEIGHT:
+        return 0
+    return get_total_value(chromosome)
 
 
-# ---------- Selection: tournament ----------
+
+# ---------- Selection: roulette wheel ----------
 def selection(population, num_parents):
-    # TODO: choose num_parents parents with tournament selection.
-    # - Each tournament has TOURNAMENT_SIZE different players.
+    # TODO: choose num_parents parents with roulette wheel selection.
     # - Return a list of num_parents chromosomes.
+    # - Think: what happens if the fitness of every chromosome is 0?
     # Delete the next line when you write your code.
     # It stops the program with a message.
     raise NotImplementedError("selection() is not written yet")
@@ -173,7 +218,8 @@ def run_ga():
     #    d. population = survival_selection(population, children)
     #    e. After survival selection, the best chromosome is population[0].
     #       Print the generation number and the best fitness.
-    #    f. Stop the loop early (break) when the best seating plan is perfect.
+    #    f. We do not know the best value, so do NOT stop early.
+    #       Run all MAX_GENERATIONS generations.
     # 3. Return the best chromosome.
     # Delete the next line when you write your code.
     # It stops the program with a message.
@@ -182,7 +228,21 @@ def run_ga():
 
 # ---------- Test your functions one by one ----------
 # Remove the # at the start of a line to run the test.
-# print(random_chromosome())
+
+# print(names)
+
+# c = random_chromosome()
+# decode(c)
+
+l = generate_population(10)
+
+for c in l:
+    decode(c)
+
+# print(c)
+
+# decode(c)
+
 # decode(random_chromosome())
 # print(fitness(random_chromosome()))
 # print(generate_population(3))
@@ -194,11 +254,11 @@ def run_ga():
 # ---------- Try it ----------
 # Use the same random numbers on every run.
 # Remove this line to see a new run each time.
-random.seed(1)
+# random.seed(1)
 
-best = run_ga()
+# best = run_ga()
 
-print("\nFinal solution:")
-print(f"  Chromosome: {best}")
-print(f"  Fitness:    {fitness(best)}")
-decode(best)
+# print("\nFinal solution:")
+# print(f"  Chromosome: {best}")
+# print(f"  Fitness:    {fitness(best)}")
+# decode(best)
