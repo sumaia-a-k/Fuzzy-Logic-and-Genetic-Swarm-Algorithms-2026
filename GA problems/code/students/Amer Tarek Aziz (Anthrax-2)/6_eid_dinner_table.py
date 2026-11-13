@@ -228,11 +228,13 @@ def mutation(chromosome):
     # - Do not change the chromosome you got: change a copy.
 
     mutation_prob = random.random()
+    new_chromosome = chromosome.copy()
 
     if mutation_prob < MUTATION_RATE:
         i, j = random.sample(range(N), k=2)
-        chromosome[i], chromosome[j] = chromosome[j], chromosome[i]
-    return chromosome
+        new_chromosome[i], new_chromosome[j] = new_chromosome[j], new_chromosome[i]
+        
+    return new_chromosome
 
 
 def mutate_children(children):
