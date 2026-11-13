@@ -42,6 +42,10 @@ items = {
     "Guitar":      (3, 4),
 }
 
+names = list(items.keys())
+
+N = len(items)
+
 # The backpack can carry at most 10 kg
 MAX_WEIGHT = 10
 
@@ -52,32 +56,62 @@ CROSSOVER_RATE = 0.8   # pc: the chance that a pair of parents does crossover
 MUTATION_RATE = 0.3    # pm: the chance of a mutation
 MAX_GENERATIONS = 200  # stop after this many generations
 
+PENALTY = 50
 
 # ---------- Representation ----------
 def random_chromosome():
     # TODO: return one random chromosome (one random backpack).
     # - First decide: what does a chromosome look like? What does one gene mean?
     # - Write your answer in a comment here.
-    # Delete the next line when you write your code.
-    # It stops the program with a message.
-    raise NotImplementedError("random_chromosome() is not written yet")
+    # backpack = []
+    # total_weight = 0
+    # available_items = names.copy()
+    # random.shuffle(available_items)
+
+    # for item in available_items:
+    #     item_weight = items[item][0]
+    #     if total_weight + item_weight <= MAX_WEIGHT:
+    #         backpack.append(item)
+    #         total_weight += item_weight
+    #     else:
+    #         continue
+
+    # return backpack
+    return [random.randint(0, 1) for _ in range(N)]
+
+
+def get_total_weight(chromosome):
+    total = 0
+    for i in range(len(chromosome)):
+        name = names[i]
+        total += items[name][0]
+    return total
+
+
+def get_total_value(chromosome):
+    total = 0
+    for i in range(len(chromosome)):
+        name = names[i]
+        total += items[name][1]
+    return total
 
 
 def decode(chromosome):
     # TODO: print the backpack in a way people can read.
     # - Show the items in the backpack, the total weight and the total value.
-    # Delete the next line when you write your code.
-    # It stops the program with a message.
-    raise NotImplementedError("decode() is not written yet")
+    print("All items inside the backpack:\n")
+    for n, i in enumerate(range(len(chromosome)), 1):
+        name = names[i]
+        print(f"item {n}  -->  {name},  weighs  {items[name][0]},  value  {items[name][1]}")
+
+    print(f"Total weight:  {get_total_weight(chromosome)}")
+    print(f"Total value:  {get_total_value(chromosome)}")
 
 
 # ---------- Population ----------
 def generate_population(size):
     # TODO: return a list with "size" random chromosomes.
-    # Delete the next line when you write your code.
-    # It stops the program with a message.
-    raise NotImplementedError("generate_population() is not written yet")
-
+    return [random_chromosome() for _ in range(size)]
 
 # ---------- Fitness ----------
 def fitness(chromosome):
@@ -86,9 +120,15 @@ def fitness(chromosome):
     #   because survival_selection() keeps the highest fitness.
     # - Roulette wheel selection needs a fitness that is 0 or more.
     # - Think: what do you do with a backpack that is heavier than 10 kg?
-    # Delete the next line when you write your code.
-    # It stops the program with a message.
-    raise NotImplementedError("fitness() is not written yet")
+    # if get_total_weight(chromosome) > MAX_WEIGHT:
+    #     return 0
+
+    # return get_total_value(chromosome)
+
+    if get_total_weight(chromosome) > MAX_WEIGHT:
+        return 0
+    return get_total_value(chromosome)
+
 
 
 # ---------- Selection: roulette wheel ----------
@@ -188,7 +228,21 @@ def run_ga():
 
 # ---------- Test your functions one by one ----------
 # Remove the # at the start of a line to run the test.
-# print(random_chromosome())
+
+# print(names)
+
+# c = random_chromosome()
+# decode(c)
+
+l = generate_population(10)
+
+for c in l:
+    decode(c)
+
+# print(c)
+
+# decode(c)
+
 # decode(random_chromosome())
 # print(fitness(random_chromosome()))
 # print(generate_population(3))
@@ -200,11 +254,11 @@ def run_ga():
 # ---------- Try it ----------
 # Use the same random numbers on every run.
 # Remove this line to see a new run each time.
-random.seed(1)
+# random.seed(1)
 
-best = run_ga()
+# best = run_ga()
 
-print("\nFinal solution:")
-print(f"  Chromosome: {best}")
-print(f"  Fitness:    {fitness(best)}")
-decode(best)
+# print("\nFinal solution:")
+# print(f"  Chromosome: {best}")
+# print(f"  Fitness:    {fitness(best)}")
+# decode(best)
