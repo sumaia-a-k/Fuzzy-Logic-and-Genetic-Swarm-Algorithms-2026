@@ -206,8 +206,14 @@ def make_children(mating_pool):
             children.append(child_1)
             children.append(child_2)
 
-            i += 2    # i plus 2 instead of i plus 1, same for j. Now pairs do not overlap.
+            i += (
+                2  # i plus 2 instead of i plus 1, same for j. Now pairs do not overlap.
+            )
             j += 2
+
+        else:
+            children.append(mating_pool[i].copy())
+            children.append(mating_pool[j].copy())
 
     return children
 
