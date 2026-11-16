@@ -143,7 +143,7 @@ def run_bees():
 # ---------- Try it ----------
 # Use the same random numbers on every run.
 # Remove this line to see a new run each time.
-random.seed(15)
+# random.seed(15)
 
 best = run_bees()
 
